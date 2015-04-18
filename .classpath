@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.2.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar" sourcepath="/Users/Sunxc/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/apktool.jar" sourcepath="/Volumes/HDD/git/Apktool-master"/>
 	<classpathentry kind="lib" path="lib/jarsigner.jar"/>
 	<classpathentry kind="output" path="bin"/>

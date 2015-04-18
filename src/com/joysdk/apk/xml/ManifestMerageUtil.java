@@ -31,6 +31,7 @@ public class ManifestMerageUtil {
         SAXReader saxReader = new SAXReader();
         Map<String, Element> userPermissionsMap=new LinkedHashMap <String, Element>();
         Map<String, Element> activityMap=new LinkedHashMap<String, Element>();
+        Map<String, Attribute> supportScreenMap=new LinkedHashMap<String, Attribute>();
         try {
             Document srcDoc=saxReader.read(new File(sourceManifestFile));
             Document targetDoc=saxReader.read(new File(targetManifestFile));
@@ -52,8 +53,27 @@ public class ManifestMerageUtil {
             Element targetAppNode=targetRoot.element("application");
             List<Element> srcAppChildrens=srcAppNode.elements();
             List<Element> targetAppChildrens=targetAppNode.elements();
+            // 这里要将接入sdk的apk中包含android.intent.action.MAIN 的activity删除
+            for(Element el : targetAppChildrens){
+                Element e=el.element("intent-filter");
+                if(e != null){
+                    Element actionEl = e.element("action");
+                    Element categoryEl = e.element("category");
+                    if(actionEl.attributeValue("name").equals("android.intent.action.MAIN")
+                            && categoryEl.attributeValue("name").equals("android.intent.category.LAUNCHER")){
+                        targetAppChildrens.remove(el);
+                        break;
+                    }
+                }
+            }
             addElementToMap(activityMap, srcAppChildrens, "name");
             addElementToMap(activityMap, targetAppChildrens, "name");
+
+            
+            Element srcSupprotEl=srcRoot.element("supports-screens");
+            Element targetSupprotEl=targetRoot.element("supports-screens");
+            addSupportScreenElement(srcSupprotEl, supportScreenMap);
+            addSupportScreenElement(targetSupprotEl, supportScreenMap);
             
             Document newFileDoc = DocumentHelper.createDocument();
             Element newRoot=newFileDoc.addElement("manifest");
@@ -68,11 +88,17 @@ public class ManifestMerageUtil {
             if(newRoot.attribute("versionCode") == null){
                 newRoot.addAttribute("versionCode", properties.getProperty("apk.version.code"));
             }
+            Element sp=newRoot.addElement("supports-screens");
+            createElementWithAtts(sp, supportScreenMap);
+            
+            Element useSdk=newRoot.addElement("uses-sdk");
+            useSdk.addAttribute("minSdkVersion", properties.getProperty("android.min.sdk.version"));
             
             // 生成只有manifest节点的文件用于生成R文件
             String manifestFile=new File(targetManifestFile).getParent() + File.separator +"AndroidManifest.xml";
             writeXML(manifestFile, newFileDoc);
             
+            // 生成全部节点的xml文件
             Iterator<String> it=userPermissionsMap.keySet().iterator();
             while(it.hasNext()){
                 String key=it.next();
@@ -158,4 +184,23 @@ public class ManifestMerageUtil {
         }
     }
     
+    private static void addSupportScreenElement(Element rootEl, Map<String, Attribute> maps){
+        if(rootEl != null){
+            Iterator<Attribute> it= rootEl.attributes().iterator();
+            while(it.hasNext()){
+                Attribute at=it.next();
+                maps.put(at.getName(), (Attribute)at.clone());
+            }
+        }
+    }
+    
+    private static Element createElementWithAtts(Element el, Map<String, Attribute> maps){
+        Iterator<String> keys=maps.keySet().iterator();
+        while(keys.hasNext()){
+            String key=keys.next();
+            Attribute att=maps.get(key);
+            el.addAttribute(key, att.getValue());
+        }
+        return el;
+    }
 }

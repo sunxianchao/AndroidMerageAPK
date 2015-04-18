@@ -49,10 +49,9 @@ public class Invoke {
         if(apkStorePath == null || apkStorePath.length() == 0){
             apkStorePath = pathMap.get("workspace.dir");
         }
-        apkStorePath = apkStorePath + "temp.apk";
         String[] args = {"-verbose", "-storepass", properties.getProperty("keystore.storepass"), 
                          "-keystore", properties.getProperty("keystore.file"), 
-                         "-signedjar", apkStorePath, apkPath, properties.getProperty("keystore.alias")};
+                         "-signedjar", apkStorePath+"temp.apk", apkPath, properties.getProperty("keystore.alias")};
         JarSigner.main(args);
     }
     
