@@ -25,11 +25,11 @@ cp接入，这次的接入主要是把sdk中的所有接口让cp进行一个调�
 
 
 ##  USEAGE
-* 由于使用了apktool 2.0版本 所以需要使用jdk1.7以上才可以通过
-usage: makeapktool
- -a,--apkfile <arg>   要进行分包处理的apk路径
- -c,--channel <arg>   c 分发渠道包功能
- -e,--encode <arg>    apk加壳
+* 由于使用了apktool 2.0版本 所以需要使用jdk1.7以上才可以通过  
+usage: makeapktool  
+ -a,--apkfile <arg>   要进行分包处理的apk路径  
+ -c,--channel <arg>   c 分发渠道包功能  
+ -e,--encode <arg>    apk加壳  
  -f,--file <arg>      配置文件路径，如果同该脚本放在同一目录该参数可省略，
-                          否则必须要指定configs.properties的路径
- -m,--merage          m 自动生成渠道包
+                          否则必须要指定configs.properties的路径  
+ -m,--merage          m 自动生成渠道包  
