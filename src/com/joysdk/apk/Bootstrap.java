@@ -1,7 +1,6 @@
 package com.joysdk.apk;
 
 import java.io.File;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -23,25 +22,32 @@ public class Bootstrap {
 
     private static String currentPath=System.getProperty("user.dir");
 
+    private static Options allOpt=new Options();
+    
+    private static Options merageOpt=new Options();
+    
+    private static Options channelOpt=new Options();
+    
     public static void main(String[] args) throws Exception {
         HelpFormatter formatter = new HelpFormatter();
         CommandLineParser parser = new PosixParser();
         CommandLine commandLine = null;
-        Options option=createOptions();
+        createOptions();
         String formatstr = "makeapktool ";
         try {
-            commandLine = parser.parse(option, args, false);
-            if(commandLine.hasOption("m")){
+            commandLine = parser.parse(allOpt, args, false);
+            if(commandLine.hasOption("-m") || commandLine.hasOption("--merage")){
                 autoMerageApk(commandLine);
-            }else if(commandLine.hasOption("c")){
+            }else if(commandLine.hasOption("-c") || commandLine.hasOption("--channel")){
+                // -a /Users/Sunxc/workspace/MakeApk/workspace/mhmh_mp3g_sdk.apk -c '1 2 3 4 5 6 7'
                 createChannelApk(commandLine);
-            }else if(commandLine.hasOption("s")){
-                
             }else{
                 throw new ParseException("");
             }
         } catch (ParseException e) {
-            formatter.printHelp(formatstr, option); // 如果发生异常，则打印出帮助信息
+//            formatter.printHelp(formatstr, option); // 如果发生异常，则打印出帮助信息
+            formatter.printHelp(formatstr + "-mf /xx/xx/config.properties", merageOpt);
+            formatter.printHelp(formatstr + "-a /xx/xx/xx.apk -c 1 2 3", channelOpt);
         }
 
     }
@@ -59,7 +65,8 @@ public class Bootstrap {
         }else{
             throw new ParseException("请输入apk 文件路径");
         }
-        String apkFileName = apkFilePath.substring(apkFilePath.lastIndexOf(File.separator));
+        
+        String apkFileName = apkFilePath.substring(apkFilePath.lastIndexOf(File.separator)+1, apkFilePath.lastIndexOf(".apk"));
         
         if(commandLine.hasOption("c")){
             String channels=commandLine.getOptionValue("c");
@@ -73,11 +80,15 @@ public class Bootstrap {
         ChannelApk apk = new ChannelApk();
         Invoke invoke = new Invoke();
         String tmpPath = currentPath + File.separator +"temp";
-        invoke.cmdDecodeApk(apkFilePath, tmpPath);
+        File f=new File(tmpPath);
+        if(!f.exists()){
+            f.mkdirs();
+        }
+        invoke.cmdDecodeApk(apkFilePath, "-fo", tmpPath);
         for(String channelId : channelIds){
             apk.updateChannelId(channelId);
             invoke.cmdBuildApk(tmpPath);
-            File distFile = new File(tmpPath+File.separator+"dist"+File.separator+apkFileName);
+            File distFile = new File(tmpPath+File.separator+"dist"+File.separator+apkFileName+".apk");
             File newApkFile = new File(currentPath+File.separator+"channelApk"+File.separator+channelId+"_"+apkFileName);
             FileUtils.copyFile(distFile, newApkFile);
         }
@@ -119,40 +130,43 @@ public class Bootstrap {
     }
     
     private static Options createOptions(){
-        Options options=new Options();
-        
         OptionBuilder.withLongOpt("merage"); 
-        OptionBuilder.hasArg(true); 
+        OptionBuilder.hasArg(false); 
         OptionBuilder.withDescription("m 自动生成渠道包"); 
         Option merageOption = OptionBuilder.create("m");
-        options.addOption(merageOption);
-        
-        OptionBuilder.withLongOpt("channel"); 
-        OptionBuilder.hasArg(true); 
-        OptionBuilder.withDescription("c 分发渠道包功能"); 
-        Option channelOption = OptionBuilder.create("c");
-        options.addOption(channelOption);
-
-        OptionBuilder.withLongOpt("encode"); 
-        OptionBuilder.hasArg(true); 
-        OptionBuilder.withDescription("apk加壳"); 
-        Option encodeApkOption = OptionBuilder.create("e");
-        options.addOption(encodeApkOption);
-        
+        merageOpt.addOption(merageOption);
+        allOpt.addOption(merageOption);
 
         OptionBuilder.withLongOpt("file"); 
         OptionBuilder.hasArg(true); 
         OptionBuilder.withDescription("配置文件路径，如果同该脚本放在同一目录该参数可省略， 否则必须要指定configs.properties的路径"); 
         Option fileOption = OptionBuilder.create("f");
-        options.addOption(fileOption);
+        merageOpt.addOption(fileOption);
+        allOpt.addOption(fileOption);
         
+        OptionBuilder.withLongOpt("channel"); 
+        OptionBuilder.hasArg(true); 
+        OptionBuilder.withDescription("c 分发渠道包功能"); 
+        Option channelOption = OptionBuilder.create("c");
+        channelOpt.addOption(channelOption);
+        allOpt.addOption(channelOption);
 
         OptionBuilder.withLongOpt("apkfile"); 
         OptionBuilder.hasArg(true); 
         OptionBuilder.withDescription("要进行分包处理的apk路径"); 
         Option apkOption = OptionBuilder.create("a");
-        options.addOption(apkOption);
+        channelOpt.addOption(apkOption);
+        allOpt.addOption(apkOption);
         
-        return options;
+        OptionBuilder.withLongOpt("encode"); 
+        OptionBuilder.hasArg(true); 
+        OptionBuilder.withDescription("apk加壳"); 
+        Option encodeApkOption = OptionBuilder.create("e");
+//        channelOpt.addOption(encodeApkOption);
+        
+        
+        allOpt.addOption(merageOption);
+        allOpt.addOption(channelOption);
+        return allOpt;
     }
 }

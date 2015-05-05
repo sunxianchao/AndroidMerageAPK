@@ -19,8 +19,9 @@ public class PropertiesUtil {
      * 处理propertise文件 
      * @param fileConfig  文件的明（路径） 
      * @param flag 为了区分非propertise文件（利用构造方法的重载） 
+     * @throws Exception 
      */  
-    public static Properties loadFile(String fileConfig){ //构造方法  
+    public static Properties loadFile(String fileConfig) throws Exception{ //构造方法  
         //获取输入流  
         try {
             String[] files=fileConfig.split(",");
@@ -32,7 +33,8 @@ public class PropertiesUtil {
             }
             in.close();  
         } catch (Exception e) {  
-            System.out.println("------读取properties配置文件" + fileConfig + "时，出错:" + e.getMessage().toString());  
+            System.out.println("------读取properties配置文件" + fileConfig + "时，出错:" + e.getMessage().toString());
+            throw new Exception();
         }  
         return properties;
     }  
