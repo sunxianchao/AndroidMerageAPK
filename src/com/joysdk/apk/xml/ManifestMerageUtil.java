@@ -82,11 +82,11 @@ public class ManifestMerageUtil {
                 newRoot.addAttribute("xmlns:android", "http://schemas.android.com/apk/res/android");
             }
             newRoot.attribute("package").setValue(properties.getProperty("apk.package.name"));
-            if(newRoot.attribute("versionName") == null){
-                newRoot.addAttribute("versionName", properties.getProperty("apk.version.name"));
+            if(newRoot.attribute("android:versionName") == null){
+                newRoot.addAttribute("android:versionName", properties.getProperty("apk.version.name"));
             }
-            if(newRoot.attribute("versionCode") == null){
-                newRoot.addAttribute("versionCode", properties.getProperty("apk.version.code"));
+            if(newRoot.attribute("android:versionCode") == null){
+                newRoot.addAttribute("android:versionCode", properties.getProperty("apk.version.code"));
             }
             Element sp=newRoot.addElement("supports-screens");
             createElementWithAtts(sp, supportScreenMap);
