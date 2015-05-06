@@ -172,8 +172,6 @@ public class FileUtil {
     
     
     public static void main(String[] args) throws IOException {
-        deleteFiles("/Users/Sunxc/workspace/MakeApk/workspace/temp/", false, 1, "temp");
-        copyFolder(new File("/Users/Sunxc/workspace/MakeApk/workspace/temp/temp"), new File("/Users/Sunxc/workspace/MakeApk/workspace/temp/"));
-        FileUtils.deleteDirectory(new File("/Users/Sunxc/workspace/MakeApk/workspace/temp/temp"));
+        FileUtils.copyFile(new File("/Users/Sunxc/workspace/MakeApk/build.xml"), new File("/Users/Sunxc/workspace/MakeApk/workspace/aaa.xml"));
     }
 }

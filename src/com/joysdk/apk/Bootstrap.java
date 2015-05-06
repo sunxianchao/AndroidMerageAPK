@@ -119,6 +119,7 @@ public class Bootstrap {
         invoke.cmdDecodeApk(targetApkFile, "-fo",  pathMap.get("targetApkPath"));
         invoke.createManifestXmlFile();
         invoke.merageResAndXmlFiles();
+        invoke.setIcon(pros.getProperty("workspace.dir") + File.separator +"AndroidManifest.xml");
         invoke.initWithYmlFile();
         BuildApk.main(new String[]{pathMap.get("temp")});
         invoke.cmdDecodeApk(pathMap.get("temp") + "temp.apk", "-fo", pros.getProperty("workspace.dir")+"_temp", "-f");
@@ -126,7 +127,7 @@ public class Bootstrap {
         invoke.merageAll();
         invoke.cmdBuildApk(pathMap.get("temp"));
         invoke.signApk(pathMap.get("temp") + "dist" + File.separator + "temp.apk");
-        invoke.done();
+//        invoke.done();
     }
     
     private static Options createOptions(){

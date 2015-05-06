@@ -14,11 +14,13 @@ import sun.security.tools.JarSigner;
 import brut.apktool.Main;
 import brut.common.BrutException;
 
+import com.joysdk.apk.util.FileUtil;
 import com.joysdk.apk.xml.ManifestMerageUtil;
 import com.joysdk.apk.xml.MergerFilesUtil;
 
 public class Invoke {
     
+    private static final String[] drawables=new String[]{"drawable", "drawable-hdpi", "drawable-ldpi", "drawable-mdpi", "drawable-xhdpi"};
     private static Properties properties;
     private static Map<String, String> pathMap;
     
@@ -184,6 +186,17 @@ public class Invoke {
         String[] result = Arrays.copyOf(arr, arr.length + args.length);
         System.arraycopy(args, 0, result, arr.length, args.length);
         Main.main(result);
+    }
+    
+    public void setIcon(String manifestfile) throws IOException{
+        String iconName=ManifestMerageUtil.getIconName(manifestfile);
+        String iconPath=properties.getProperty("apk.icon.path");
+        String fileExt=FileUtil.getExtension(iconPath);
+        iconName+=fileExt;
+        for(String drawable : drawables){
+            String drawablePath=properties.getProperty("workspace.dir")+ File.separator+ "temp" + File.separator+"res" +File.separator + drawable+File.separator;
+            FileUtils.copyFile(new File(iconPath), new File(drawablePath+iconName));
+        }
     }
     
     public static void main(String[] args) throws Exception {

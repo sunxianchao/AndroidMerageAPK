@@ -91,8 +91,15 @@ public class ManifestMerageUtil {
             Element sp=newRoot.addElement("supports-screens");
             createElementWithAtts(sp, supportScreenMap);
             
-            Element useSdk=newRoot.addElement("uses-sdk");
-            useSdk.addAttribute("minSdkVersion", properties.getProperty("android.min.sdk.version"));
+            Element useSdk=newRoot.element("uses-sdk");
+            if(useSdk == null){
+                useSdk=newRoot.addElement("uses-sdk");
+                if(useSdk.attribute("android:minSdkVersion") == null){
+                    useSdk.addAttribute("android:minSdkVersion", properties.getProperty("android.min.sdk.version"));
+                }
+            }else{
+                useSdk.attribute("android:minSdkVersion").setValue(properties.getProperty("android.min.sdk.version"));
+            }
             
             // 生成只有manifest节点的文件用于生成R文件
             String manifestFile=new File(targetManifestFile).getParent() + File.separator +"AndroidManifest.xml";
@@ -113,7 +120,7 @@ public class ManifestMerageUtil {
                 String key=it.next();
                 newAppNode.add((Element)activityMap.get(key).clone());
             }
-            String tempManifestFile= properties.getProperty("workspace.dir") + File.separator +"AndroidManifest.xml";
+            String tempManifestFile= properties.getProperty("workspace.dir")+"AndroidManifest.xml";
             writeXML(tempManifestFile, newFileDoc);
             
         } catch(Exception e) {
@@ -147,6 +154,25 @@ public class ManifestMerageUtil {
             Document srcDoc=saxReader.read(new File(manifest));
             Element root=srcDoc.getRootElement();
             return root.attribute("package").getStringValue();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    // manifest中游戏桌面的icon
+    public static String getIconName(String manifest){
+        SAXReader saxReader = new SAXReader();
+        try {
+            Document srcDoc=saxReader.read(new File(manifest));
+            Element root=srcDoc.getRootElement();
+            Element appNode=root.element("application");
+            String icon=appNode.attributeValue("icon");
+            if(icon == null || icon.length() ==0){
+                throw new Exception("未找到游戏icon");
+            }
+            String iconName=icon.split("/")[1];
+            return iconName;
         }catch(Exception e){
             e.printStackTrace();
         }
