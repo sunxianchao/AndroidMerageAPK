@@ -24,7 +24,7 @@ public class ChannelApk {
         for(int i = 0; i < lines.size(); i++){
             String line = lines.get(i);
             if(line.contains("PROMPT_CHANNEL")){
-                line = line.replaceAll("PROMPT_CHANNEL=.*", "PROMPT_CHANNEL="+line);
+                line = line.replaceAll("PROMPT_CHANNEL=.*", "PROMPT_CHANNEL="+channelId);
                 lines.remove(i);
                 lines.add(i, line);
                 break;
